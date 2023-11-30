@@ -22,7 +22,6 @@ if (sys.platform == 'linux' and not os.environ.get('DISPLAY')):
 
 def akida_model_inference(model, processed_features):
 
-    scaling_factor = 15 / np.max(processed_features)
     # Convert to uint8
     processed_features_uint8 = np.uint8(processed_features * scaling_factor)
 
