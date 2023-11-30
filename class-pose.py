@@ -354,10 +354,10 @@ def main(argv):
     # Run model inference.
     keypoints_with_scores = movenet(input_image)
     scaling_factor = 15
-    keypoints_with_scores = scaling_factor * keypoints_with_scores
-    keypoints_with_scores = keypoints_with_scores.round()
-    keypoints_with_scores = keypoints_with_scores.astype(int)    
-    keypoints_with_scores_flat = keypoints_with_scores.flatten()
+    keypoints_with_scores_scaled = scaling_factor * keypoints_with_scores
+    keypoints_with_scores_scaled = keypoints_with_scores_scaled.round()
+    keypoints_with_scores_scaled = keypoints_with_scores_scaled.astype(int)    
+    keypoints_with_scores_flat = keypoints_with_scores_scaled.flatten()
     print("keypoints with scores = ", keypoints_with_scores)
 
     # Visualize the predictions with image.
@@ -378,7 +378,8 @@ def main(argv):
     np.set_printoptions(suppress=True, floatmode='fixed', precision=6)
     softmaxed_pred = scipy.special.softmax(predictions)
     print(softmaxed_pred)
-
+    
+    plt.show()
 
 if __name__ == "__main__":
    main(sys.argv[1:])
