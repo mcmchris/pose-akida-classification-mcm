@@ -15,7 +15,6 @@ from scipy import special
 #movenet stuff
 import tensorflow as tf
 import numpy as np
-import cv2
 
 # Import matplotlib libraries
 from matplotlib import pyplot as plt
@@ -283,6 +282,26 @@ def main(argv):
         help()
         sys.exit(2)
 
+    if len(args)>= 2:
+        videoCaptureDeviceId = int(args[1])
+    else:
+        port_ids = get_webcams()
+        if len(port_ids) == 0:
+            raise Exception('Cannot find any webcams')
+        if len(args)<= 1 and len(port_ids)> 1:
+            raise Exception("Multiple cameras found. Add the camera port ID as a second argument to use to this script")
+        videoCaptureDeviceId = int(port_ids[0])
+
+    camera = cv2.VideoCapture(videoCaptureDeviceId)
+    ret = camera.read()[0]
+    if ret:
+        backendName = camera.getBackendName()
+        w = camera.get(3)
+        h = camera.get(4)
+        print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
+    else:
+        raise Exception("Couldn't initialize selected camera.")        
+
     model = args[0]
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -291,10 +310,6 @@ def main(argv):
     print('MODEL: ' + modelfile)
 
     akida_model = akida.Model(modelfile)
-    #processed features from https://studio.edgeimpulse.com/studio/209276/dsp/organization/59
-    processed_features = np.array([0.4957, 0.6186, 0.7006, 0.4793, 0.6391, 0.6350, 0.4793, 0.5859, 0.6350, 0.4957, 0.6678, 0.2991, 0.5039, 0.5490, 0.7538, 0.6596, 0.7210, 0.7006, 0.6022, 0.4998, 0.7538, 0.8399, 0.7825, 0.8030, 0.4916, 0.3359, 0.6350, 0.9791, 0.8276, 0.7006, 0.3400, 0.2827, 0.6350, 0.9832, 0.6637, 0.2458, 0.9791, 0.4916, 0.1966, 0.9505, 0.7210, 0.1966, 0.9341, 0.3687, 0.0410, 1.0365, 0.6883, 0.0574, 1.0119, 0.4220, 0.0205])
-
-    '''here'''
 
     # Initialize the TFLite interpreter
     interpreter = tf.lite.Interpreter(model_path="model.tflite")
@@ -325,9 +340,12 @@ def main(argv):
         return keypoints_with_scores    
 
     # Load the input image.
-    image_path = 'input_image.jpeg'
-    image = tf.io.read_file(image_path)
+    next_frame = 0 # limit to ~10 fps here
+    result, image = camera.read()
+    cv2.imwrite("image.jpg", image)
+    image = tf.io.read_file("image.jpg")
     image = tf.image.decode_jpeg(image)
+
 
     # Resize and pad the image to keep the aspect ratio and fit the expected size.
     input_image = tf.expand_dims(image, axis=0)
@@ -335,6 +353,12 @@ def main(argv):
 
     # Run model inference.
     keypoints_with_scores = movenet(input_image)
+    scaling_factor = 15
+    keypoints_with_scores = scaling_factor * keypoints_with_scores
+    keypoints_with_scores = keypoints_with_scores.round()
+    keypoints_with_scores = keypoints_with_scores.astype(int)    
+    keypoints_with_scores_flat = keypoints_with_scores.flatten()
+    print("keypoints with scores = ", keypoints_with_scores)
 
     # Visualize the predictions with image.
     display_image = tf.expand_dims(image, axis=0)
@@ -347,62 +371,13 @@ def main(argv):
     plt.imshow(output_overlay)
     _ = plt.axis('off')    
 
+    processed_features = keypoints_with_scores_flat
+
     predictions = akida_model_inference(akida_model, processed_features)
 
     np.set_printoptions(suppress=True, floatmode='fixed', precision=6)
     softmaxed_pred = scipy.special.softmax(predictions)
     print(softmaxed_pred)
-
-'''
-    if len(args)>= 2:
-        videoCaptureDeviceId = int(args[1])
-    else:
-        port_ids = get_webcams()
-        if len(port_ids) == 0:
-            raise Exception('Cannot find any webcams')
-        if len(args)<= 1 and len(port_ids)> 1:
-            raise Exception("Multiple cameras found. Add the camera port ID as a second argument to use to this script")
-        videoCaptureDeviceId = int(port_ids[0])
-
-    camera = cv2.VideoCapture(videoCaptureDeviceId)
-    ret = camera.read()[0]
-    if ret:
-        backendName = camera.getBackendName()
-        w = camera.get(3)
-        h = camera.get(4)
-        print("Camera %s (%s x %s) in port %s selected." %(backendName,h,w, videoCaptureDeviceId))
-        camera.release()
-    else:
-        raise Exception("Couldn't initialize selected camera.")
-
-    next_frame = 0 # limit to ~10 fps here
-
-    for res, img in runner.classifier(videoCaptureDeviceId):
-        if (next_frame > now()):
-            time.sleep((next_frame - now()) / 1000)
-
-        # print('classification runner response', res)
-
-        if "classification" in res["result"].keys():
-            print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
-            for label in labels:
-                score = res['result']['classification'][label]
-                print('%s: %.2f\t' % (label, score), end='')
-            print('', flush=True)
-
-        elif "bounding_boxes" in res["result"].keys():
-            print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
-            for bb in res["result"]["bounding_boxes"]:
-                print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
-                img = cv2.rectangle(img, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
-
-        if (show_camera):
-            cv2.imshow('edgeimpulse', cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-            if cv2.waitKey(1) == ord('q'):
-                break
-
-            next_frame = now() + 100
-'''
 
 
 if __name__ == "__main__":
