@@ -356,6 +356,7 @@ def main(argv):
     keypoints_with_scores_scaled = scaling_factor * keypoints_with_scores
     keypoints_with_scores_scaled = keypoints_with_scores_scaled.round()
     keypoints_with_scores_scaled = keypoints_with_scores_scaled.astype(int)    
+    keypoints_with_scores_scaled = np.clip(keypoints_with_scores_scaled, 0, 15)
     keypoints_with_scores_flat = keypoints_with_scores_scaled.flatten()
     #print("keypoints with scores = ", keypoints_with_scores)
 
@@ -379,7 +380,8 @@ def main(argv):
     softmaxed_pred = scipy.special.softmax(predictions)
     print(softmaxed_pred)
     
-    plt.show()
+    #plt.show()
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+  while True:
+    main(sys.argv[1:])
