@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrainChip Webpage</title>
+    <title>BrainChip Appliance Control</title>
+    <script>
+        // Function to refresh the page every 5 seconds
+        function autoRefresh() {
+            setTimeout(function () {
+                location.reload();
+            }, 2000); // Adjust the interval (in milliseconds) as needed
+        }
+
+        // Call the autoRefresh function when the page loads
+        window.onload = autoRefresh;
+    </script>
 </head>
 <body>
-    <h1>Pose Classification</h1>
+    <h1>Point in specified directions to control an appliance</h1>
     <img src="{{ url_for('static', filename='pose.jpg') }}" alt="Pose">
 </body>
 </html>
