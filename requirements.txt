@@ -6,3 +6,4 @@ akida
 matplotlib
 imageio
 ipython
+flask
