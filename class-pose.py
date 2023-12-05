@@ -337,51 +337,53 @@ def main(argv):
         # Get the model prediction.
         keypoints_with_scores = interpreter.get_tensor(output_details[0]['index'])
         return keypoints_with_scores    
-
-    # Load the input image.
-    next_frame = 0 # limit to ~10 fps here
-    result, image = camera.read()
-    cv2.imwrite("image.jpg", image)
-    image = tf.io.read_file("image.jpg")
-    image = tf.image.decode_jpeg(image)
-
-
-    # Resize and pad the image to keep the aspect ratio and fit the expected size.
-    input_image = tf.expand_dims(image, axis=0)
-    input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
-
-    # Run model inference.
-    keypoints_with_scores = movenet(input_image)
-    scaling_factor = 15
-    keypoints_with_scores_scaled = scaling_factor * keypoints_with_scores
-    keypoints_with_scores_scaled = keypoints_with_scores_scaled.round()
-    keypoints_with_scores_scaled = keypoints_with_scores_scaled.astype(int)    
-    keypoints_with_scores_scaled = np.clip(keypoints_with_scores_scaled, 0, 15)
-    keypoints_with_scores_flat = keypoints_with_scores_scaled.flatten()
-    #print("keypoints with scores = ", keypoints_with_scores)
-
-    # Visualize the predictions with image.
-    display_image = tf.expand_dims(image, axis=0)
-    display_image = tf.cast(tf.image.resize_with_pad(
-        display_image, 1280, 1280), dtype=tf.int32)
-    output_overlay = draw_prediction_on_image(
-        np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
-
-    plt.figure(figsize=(5, 5))
-    plt.imshow(output_overlay)
-    _ = plt.axis('off')    
-    plt.savefig('./static/pose.jpg')
-
-    processed_features = keypoints_with_scores_flat
-
-    predictions = akida_model_inference(akida_model, processed_features)
-
-    np.set_printoptions(suppress=True, floatmode='fixed', precision=6)
-    softmaxed_pred = scipy.special.softmax(predictions)
-    print(softmaxed_pred)
     
-    #plt.show()
+    while True:
+      # Load the input image.
+      next_frame = 0 # limit to ~10 fps here
+      result, image = camera.read()
+      cv2.imwrite("image.jpg", image)
+      image = tf.io.read_file("image.jpg")
+      image = tf.image.decode_jpeg(image)
+
+
+      # Resize and pad the image to keep the aspect ratio and fit the expected size.
+      input_image = tf.expand_dims(image, axis=0)
+      input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
+
+      # Run model inference.
+      keypoints_with_scores = movenet(input_image)
+      scaling_factor = 15
+      keypoints_with_scores_scaled = scaling_factor * keypoints_with_scores
+      keypoints_with_scores_scaled = keypoints_with_scores_scaled.round()
+      keypoints_with_scores_scaled = keypoints_with_scores_scaled.astype(int)    
+      keypoints_with_scores_scaled = np.clip(keypoints_with_scores_scaled, 0, 15)
+      keypoints_with_scores_flat = keypoints_with_scores_scaled.flatten()
+      #print("keypoints with scores = ", keypoints_with_scores)
+
+      # Visualize the predictions with image.
+      display_image = tf.expand_dims(image, axis=0)
+      display_image = tf.cast(tf.image.resize_with_pad(
+          display_image, 1280, 1280), dtype=tf.int32)
+      output_overlay = draw_prediction_on_image(
+          np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
+
+      plt.figure(figsize=(5, 5))
+      plt.imshow(output_overlay)
+      _ = plt.axis('off')    
+
+      processed_features = keypoints_with_scores_flat
+
+      predictions = akida_model_inference(akida_model, processed_features)
+
+      np.set_printoptions(suppress=True, floatmode='fixed', precision=6)
+      softmaxed_pred = scipy.special.softmax(predictions)
+      print(softmaxed_pred)
+
+      plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
+      plt.savefig('./static/pose.jpg')
+      
+      #plt.show()
 
 if __name__ == "__main__":
-  while True:
-    main(sys.argv[1:])
+  main(sys.argv[1:])
