@@ -357,7 +357,7 @@ def main(argv):
     keypoints_with_scores_scaled = keypoints_with_scores_scaled.round()
     keypoints_with_scores_scaled = keypoints_with_scores_scaled.astype(int)    
     keypoints_with_scores_flat = keypoints_with_scores_scaled.flatten()
-    print("keypoints with scores = ", keypoints_with_scores)
+    #print("keypoints with scores = ", keypoints_with_scores)
 
     # Visualize the predictions with image.
     display_image = tf.expand_dims(image, axis=0)
@@ -369,6 +369,7 @@ def main(argv):
     plt.figure(figsize=(5, 5))
     plt.imshow(output_overlay)
     _ = plt.axis('off')    
+    plt.savefig('pose.jpg')
 
     processed_features = keypoints_with_scores_flat
 
