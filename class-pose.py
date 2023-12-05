@@ -220,7 +220,7 @@ if (sys.platform == 'linux' and not os.environ.get('DISPLAY')):
 def akida_model_inference(model, processed_features):
 
     # Convert to uint8
-    processed_features_uint8 = np.uint8(processed_features * scaling_factor)
+    processed_features_uint8 = np.uint8(processed_features)
 
     # Reshape to model input shape
     input_shape = (1,) + tuple(model.input_shape)  # Assuming model.input_shape returns (39,)
