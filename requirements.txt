@@ -1,0 +1,8 @@
+scipy
+opencv-python
+tensorflow
+numpy
+akida
+matplotlib
+imageio
+ipython
