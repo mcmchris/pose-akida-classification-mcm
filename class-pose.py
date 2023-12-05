@@ -369,7 +369,7 @@ def main(argv):
     plt.figure(figsize=(5, 5))
     plt.imshow(output_overlay)
     _ = plt.axis('off')    
-    plt.savefig('pose.jpg')
+    plt.savefig('./static/pose.jpg')
 
     processed_features = keypoints_with_scores_flat
 
