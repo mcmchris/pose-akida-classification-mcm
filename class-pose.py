@@ -392,9 +392,7 @@ def main(argv):
       other_inference = softmaxed_pred[0][0][0][2]*100
       tv_inference = softmaxed_pred[0][0][0][3]*100
 
-      #print("AC: ")
-      print("AC: ", softmaxed_pred[0][0][0][0]*100, "% Light: ", softmaxed_pred[0][0][0][1]*100, "% Other: ", softmaxed_pred[0][0][0][2]*100, " % TV: ", softmaxed_pred[0][0][0][3]*100, "%")
-      print ("AC: %.2f Light: %.2f Other: %.2f TV: %.2f" % (ac_inference, light_inference, other_inference, tv_inference))
+      print ("AC: %.2f% Light: %.2f% Other: %.2f% TV: %.2f%" % (ac_inference, light_inference, other_inference, tv_inference))
 
       plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
       plt.savefig('./static/pose.jpg')
