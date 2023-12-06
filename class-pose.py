@@ -294,7 +294,7 @@ def help():
     print('python classify.py <path_to_model.fbz> <Camera port ID, only required when more than 1 camera is present>')
 
 def googleSDK():
-    if light_inference > 90:
+    if light_inference > 60:
         LIGHTcount = LIGHTcount + 1 
         if LIGHTcount > trustVal and rptCtrl == 1:
             rptCtrl = 0
@@ -320,7 +320,7 @@ def googleSDK():
             if x.status_code == 200:
                 print('AC controlled successfully')
             ACcount = 0
-    if tv_inference > 90:
+    if tv_inference > 60:
         TVcount = TVcount + 1
         if TVcount > trustVal and rptCtrl == 1:
             rptCtrl = 0
@@ -334,7 +334,7 @@ def googleSDK():
                 print('TV controlled successfully')
             
             TVcount = 0
-    if other_inference > 90:
+    if other_inference > 60:
         OTHERcount = OTHERcount + 1
         if OTHERcount > 2:
             rptCtrl = 1
