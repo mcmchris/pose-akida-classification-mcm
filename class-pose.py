@@ -44,18 +44,6 @@ light_inference = 0
 tv_inference = 0
 other_inference = 0
 
-ACcount = 0
-TVcount = 0
-LIGHTcount = 0 
-OTHERcount = 0
-
-lightStat = 0
-acStat = 0
-tvStat = 0
-
-trustVal = 3
-rptCtrl = 0
-
 # Dictionary that maps from joint names to keypoint indices.
 KEYPOINT_DICT = {
     'nose': 0,
@@ -393,6 +381,18 @@ def main(argv):
     interpreter = tf.lite.Interpreter(model_path="model.tflite")
     interpreter.allocate_tensors()
     input_size = 192
+
+    ACcount = 0
+    TVcount = 0
+    LIGHTcount = 0 
+    OTHERcount = 0
+
+    lightStat = 0
+    acStat = 0
+    tvStat = 0
+
+    trustVal = 3
+    rptCtrl = 0
 
     def movenet(input_image):
         """Runs detection on an input image.
