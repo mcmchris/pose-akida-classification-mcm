@@ -385,7 +385,7 @@ def main(argv):
       print(softmaxed_pred[0][0][0])
       #print("AC: ")
       print("AC: ", softmaxed_pred[0][0][0][0]*100, "% Light: ", softmaxed_pred[0][0][0][1]*100, "% Other: ", softmaxed_pred[0][0][0][2]*100, " % TV: ", softmaxed_pred[0][0][0][3]*100, "%")
-      print "%.2f %" % (softmaxed_pred[0][0][0][0]*100)
+      print ("%.2f % " % softmaxed_pred[0][0][0][0]*100)
 
       plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
       plt.savefig('./static/pose.jpg')
