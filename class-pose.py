@@ -383,7 +383,7 @@ def main(argv):
       np.set_printoptions(suppress=True, floatmode='fixed', precision=6)
       softmaxed_pred = scipy.special.softmax(predictions)
       print(softmaxed_pred)
-      print(softmaxed_pred[0])
+      print(softmaxed_pred[0][0][0][0])
       plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
       plt.savefig('./static/pose.jpg')
       
