@@ -11,6 +11,9 @@ from akida import devices
 import numpy as np
 from scipy import special
 
+#Http requests
+import requests
+import json
 
 #movenet stuff
 import tensorflow as tf
@@ -31,10 +34,27 @@ from IPython.display import HTML, display
 url = 'http://10.0.0.173:8123/api/services/google_assistant_sdk/send_text_command'
 auth = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIwNTA2N2M1YjVkMmY0NTIxOGQ2ZjM1ZDZlMmI3OGEwNCIsImlhdCI6MTYyNDkyODA2NCwiZXhwIjoxOTQwMjg4MDY0fQ.jRSQWYe3LpkZO_4No_RWnNhWvX73jpoS6_r91-nEjLU'
 
+headers = {    
+    "Content-Type": "application/json",
+    "authorization": auth
+}
+
 ac_inference = 0
 light_inference = 0
 tv_inference = 0
 other_inference = 0
+
+ACcount = 0
+TVcount = 0
+LIGHTcount = 0 
+OTHERcount = 0
+
+lightStat = 0
+acStat = 0
+tvStat = 0
+
+trustVal = 3
+rptCtrl = 0
 
 # Dictionary that maps from joint names to keypoint indices.
 KEYPOINT_DICT = {
@@ -273,6 +293,56 @@ signal.signal(signal.SIGINT, sigint_handler)
 def help():
     print('python classify.py <path_to_model.fbz> <Camera port ID, only required when more than 1 camera is present>')
 
+def googleSDK():
+    if light_inference > 90:
+        LIGHTcount = LIGHTcount + 1 
+        if LIGHTcount > trustVal and rptCtrl == 1:
+            rptCtrl = 0
+            print("You are pointing the Lightbulb")
+            lightStat = not(lightStat)
+            if lightStat == 1:
+                x = requests.post(url, data=json.dumps({"command":"prende la luz de la habitacion"}), headers=headers)
+            elif lightStat == 0:
+                x = requests.post(url, data=json.dumps({"command":"apaga la luz de la habitacion"}), headers=headers)
+            if x.status_code == 200:
+                print('Lightbulb controlled successfully')
+            LIGHTcount = 0
+    if ac_inference > 120:
+        ACcount = ACcount + 1
+        if ACcount > trustVal and rptCtrl == 1:
+            rptCtrl = 0
+            print("You are pointing the Air Conditioner")
+            acStat = not(acStat)
+            if acStat == 1:
+                x = requests.post(url, data=json.dumps({"command":"prende el aire de la habitacion"}), headers=headers)
+            elif acStat == 0:
+                x = requests.post(url, data=json.dumps({"command":"apaga el aire de la habitacion"}), headers=headers)
+            if x.status_code == 200:
+                print('AC controlled successfully')
+            ACcount = 0
+    if tv_inference > 90:
+        TVcount = TVcount + 1
+        if TVcount > trustVal and rptCtrl == 1:
+            rptCtrl = 0
+            print("You are pointing the TV")
+            tvStat = not(tvStat)
+            if tvStat == 1:
+                x = requests.post(url, data=json.dumps({"command":"prende la television"}), headers=headers)
+            elif tvStat == 0:
+                x = requests.post(url, data=json.dumps({"command":"apaga la television"}), headers=headers)
+            if x.status_code == 200:
+                print('TV controlled successfully')
+            
+            TVcount = 0
+    if other_inference > 90:
+        OTHERcount = OTHERcount + 1
+        if OTHERcount > 2:
+            rptCtrl = 1
+            LIGHTcount = 0
+            ACcount = 0
+            TVcount = 0
+            OTHERcount = 0
+
 def main(argv):
     try:
         opts, args = getopt.getopt(argv, "h", ["--help"])
@@ -393,6 +463,8 @@ def main(argv):
       tv_inference = softmaxed_pred[0][0][0][3]*100
 
       print ("AC: %.2f Light: %.2f Other: %.2f TV: %.2f" % (ac_inference, light_inference, other_inference, tv_inference))
+
+      googleSDK()
 
       plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
       plt.savefig('./static/pose.jpg')
