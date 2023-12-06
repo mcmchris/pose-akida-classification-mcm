@@ -464,8 +464,58 @@ def main(argv):
       tv_inference = softmaxed_pred[0][0][0][3]*100
 
       print ("AC: %.2f Light: %.2f Other: %.2f TV: %.2f" % (ac_inference, light_inference, other_inference, tv_inference))
+      
+      if light_inference > 60:
+        print("Light Apuntado")
+        LIGHTcount = LIGHTcount + 1 
+        if LIGHTcount > trustVal and rptCtrl == 1:
+            rptCtrl = 0
+            print("You are pointing the Lightbulb")
+            lightStat = not(lightStat)
+            if lightStat == 1:
+                x = requests.post(url, data=json.dumps({"command":"prende la luz de la habitacion"}), headers=headers)
+            elif lightStat == 0:
+                x = requests.post(url, data=json.dumps({"command":"apaga la luz de la habitacion"}), headers=headers)
+            if x.status_code == 200:
+                print('Lightbulb controlled successfully')
+            LIGHTcount = 0
+      if ac_inference > 120:
+          ACcount = ACcount + 1
+          if ACcount > trustVal and rptCtrl == 1:
+              rptCtrl = 0
+              print("You are pointing the Air Conditioner")
+              acStat = not(acStat)
+              if acStat == 1:
+                  x = requests.post(url, data=json.dumps({"command":"prende el aire de la habitacion"}), headers=headers)
+              elif acStat == 0:
+                  x = requests.post(url, data=json.dumps({"command":"apaga el aire de la habitacion"}), headers=headers)
+              if x.status_code == 200:
+                  print('AC controlled successfully')
+              ACcount = 0
+      if tv_inference > 60:
+          TVcount = TVcount + 1
+          if TVcount > trustVal and rptCtrl == 1:
+              rptCtrl = 0
+              print("You are pointing the TV")
+              tvStat = not(tvStat)
+              if tvStat == 1:
+                  x = requests.post(url, data=json.dumps({"command":"prende la television"}), headers=headers)
+              elif tvStat == 0:
+                  x = requests.post(url, data=json.dumps({"command":"apaga la television"}), headers=headers)
+              if x.status_code == 200:
+                  print('TV controlled successfully')
+              
+              TVcount = 0
+      if other_inference > 60:
+          OTHERcount = OTHERcount + 1
+          if OTHERcount > 2:
+              rptCtrl = 1
+              LIGHTcount = 0
+              ACcount = 0
+              TVcount = 0
+              OTHERcount = 0
 
-      googleSDK()
+      #googleSDK()
 
       plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
       plt.savefig('./static/pose.jpg')
