@@ -391,7 +391,7 @@ def main(argv):
     acStat = 0
     tvStat = 0
 
-    trustVal = 3
+    trustVal = 2
     rptCtrl = 0
 
     def movenet(input_image):
@@ -466,7 +466,6 @@ def main(argv):
       print ("AC: %.2f Light: %.2f Other: %.2f TV: %.2f" % (ac_inference, light_inference, other_inference, tv_inference))
       
       if light_inference > 60:
-        print("Light Apuntado")
         LIGHTcount = LIGHTcount + 1 
         if LIGHTcount > trustVal and rptCtrl == 1:
             rptCtrl = 0
