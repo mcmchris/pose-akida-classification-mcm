@@ -384,13 +384,8 @@ def main(argv):
       softmaxed_pred = scipy.special.softmax(predictions)
       print(softmaxed_pred[0][0][0])
       #print("AC: ")
-      print("AC: ", softmaxed_pred[0][0][0][0], " Light")
-      print(" Light: ")
-      print(softmaxed_pred[0][0][0][1])
-      print(" Other: ")
-      print(softmaxed_pred[0][0][0][2])
-      print(" TV: ")
-      print(softmaxed_pred[0][0][0][3])
+      print("AC: ", softmaxed_pred[0][0][0][0]*100, "% Light: ", softmaxed_pred[0][0][0][1]*100, "% Other: ", softmaxed_pred[0][0][0][2]*100, " % TV: ", softmaxed_pred[0][0][0][3]*100, "%")
+
 
       plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
       plt.savefig('./static/pose.jpg')
