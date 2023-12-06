@@ -295,6 +295,7 @@ def help():
 
 def googleSDK():
     if light_inference > 60:
+        print("Light Apuntado")
         LIGHTcount = LIGHTcount + 1 
         if LIGHTcount > trustVal and rptCtrl == 1:
             rptCtrl = 0
