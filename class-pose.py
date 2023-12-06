@@ -516,7 +516,7 @@ def main(argv):
 
       #googleSDK()
 
-      plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
+      plt.text(0, 0, np.array2string(softmaxed_pred[0][0][0]), fontsize=12)
       plt.savefig('./static/pose.jpg')
       
       #plt.show()
