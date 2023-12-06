@@ -478,7 +478,7 @@ def main(argv):
             if x.status_code == 200:
                 print('Lightbulb controlled successfully')
             LIGHTcount = 0
-      if ac_inference > 120:
+      if ac_inference > 60:
           ACcount = ACcount + 1
           if ACcount > trustVal and rptCtrl == 1:
               rptCtrl = 0
