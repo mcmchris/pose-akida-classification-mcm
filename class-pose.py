@@ -31,6 +31,10 @@ from IPython.display import HTML, display
 url = 'http://10.0.0.173:8123/api/services/google_assistant_sdk/send_text_command'
 auth = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIwNTA2N2M1YjVkMmY0NTIxOGQ2ZjM1ZDZlMmI3OGEwNCIsImlhdCI6MTYyNDkyODA2NCwiZXhwIjoxOTQwMjg4MDY0fQ.jRSQWYe3LpkZO_4No_RWnNhWvX73jpoS6_r91-nEjLU'
 
+ac_inference = 0
+light_inference = 0
+tv_inference = 0
+other_inference = 0
 
 # Dictionary that maps from joint names to keypoint indices.
 KEYPOINT_DICT = {
@@ -383,9 +387,14 @@ def main(argv):
       np.set_printoptions(suppress=True, floatmode='fixed', precision=6)
       softmaxed_pred = scipy.special.softmax(predictions)
       print(softmaxed_pred[0][0][0])
+      ac_inference = softmaxed_pred[0][0][0][0]*100
+      light_inference = softmaxed_pred[0][0][0][1]*100
+      other_inference = softmaxed_pred[0][0][0][2]*100
+      tv_inference = softmaxed_pred[0][0][0][3]*100
+
       #print("AC: ")
       print("AC: ", softmaxed_pred[0][0][0][0]*100, "% Light: ", softmaxed_pred[0][0][0][1]*100, "% Other: ", softmaxed_pred[0][0][0][2]*100, " % TV: ", softmaxed_pred[0][0][0][3]*100, "%")
-      print ("%.2f" % softmaxed_pred[0][0][0][0]*100)
+      print ("%.2f" % ac_inference)
 
       plt.text(0, 0, np.array2string(softmaxed_pred), fontsize=12)
       plt.savefig('./static/pose.jpg')
