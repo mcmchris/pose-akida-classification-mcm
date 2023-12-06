@@ -384,7 +384,7 @@ def main(argv):
       softmaxed_pred = scipy.special.softmax(predictions)
       print(softmaxed_pred[0][0][0])
       #print("AC: ")
-      print("AC: ", softmaxed_pred[0][0][0][0])
+      print("AC: ", softmaxed_pred[0][0][0][0], " Light")
       print(" Light: ")
       print(softmaxed_pred[0][0][0][1])
       print(" Other: ")
