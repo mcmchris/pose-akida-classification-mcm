@@ -32,7 +32,7 @@ from IPython.display import HTML, display
 #@title Helper functions for visualization
 
 url = 'https://mcmchris.com/api/services/google_assistant_sdk/send_text_command'
-auth = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIwNTA2N2M1YjVkMmY0NTIxOGQ2ZjM1ZDZlMmI3OGEwNCIsImlhdCI6MTYyNDkyODA2NCwiZXhwIjoxOTQwMjg4MDY0fQ.jRSQWYe3LpkZO_4No_RWnNhWvX73jpoS6_r91-nEjLU'
+auth = 'Bearer *****************************************************************'
 
 headers = {    
     "Content-Type": "application/json",
