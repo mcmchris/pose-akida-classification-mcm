@@ -1,5 +1,7 @@
 scipy
 opencv-python
+requests
+h5py --only-binary h5py
 tensorflow
 numpy
 akida
